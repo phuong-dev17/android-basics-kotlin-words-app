@@ -16,7 +16,12 @@
 package com.example.wordsapp
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.Adapter
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wordsapp.databinding.ActivityMainBinding
@@ -25,6 +30,7 @@ import com.example.wordsapp.databinding.ActivityMainBinding
  * Main Activity and entry point for the app. Displays a RecyclerView of letters.
  */
 class MainActivity : AppCompatActivity() {
+    private var isLinearLayoutManager: Boolean = true
     private lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,8 +41,47 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView = binding.recyclerView
         // Sets the LinearLayoutManager of the recyclerview
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        chooseLayout()
+    }
+
+    private fun chooseLayout() {
+        if (isLinearLayoutManager) {
+            recyclerView.layoutManager = LinearLayoutManager(this)
+        } else {
+            recyclerView.layoutManager = GridLayoutManager(this, 4)
+        }
         recyclerView.adapter = LetterAdapter()
     }
 
+    //he thong goi MainActivity khi muon tao ra cai option menu
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        //1. Load file layout_menu.xml len menu tu he thong,
+        menuInflater.inflate(R.menu.layout_menu, menu)
+
+        //2. lay button tren menu va set lai hinh tuong ung
+        val layoutButton = menu?.findItem(R.id.action_switch_layout)
+        setIcon(layoutButton)
+
+        return true
+    }
+
+    private fun setIcon(layoutButton: MenuItem?) {
+        layoutButton?.icon = when (isLinearLayoutManager) {
+            true -> ContextCompat.getDrawable(this, R.drawable.ic_grid_layout)
+            false -> ContextCompat.getDrawable(this, R.drawable.ic_linear_layout)
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId) {
+            R.id.action_switch_layout -> {
+                isLinearLayoutManager = !isLinearLayoutManager
+                chooseLayout()
+                setIcon(item)
+
+                return true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
 }
