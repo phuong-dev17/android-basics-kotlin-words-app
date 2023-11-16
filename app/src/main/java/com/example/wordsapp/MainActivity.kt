@@ -29,6 +29,7 @@ import com.example.wordsapp.databinding.ActivityMainBinding
 /**
  * Main Activity and entry point for the app. Displays a RecyclerView of letters.
  */
+const val KEY_LAYOUT_MANAGER = "key_layout_manager"
 class MainActivity : AppCompatActivity() {
     private var isLinearLayoutManager: Boolean = true
     private lateinit var recyclerView: RecyclerView
@@ -39,9 +40,18 @@ class MainActivity : AppCompatActivity() {
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        if (savedInstanceState != null) {
+            isLinearLayoutManager = savedInstanceState.getBoolean(KEY_LAYOUT_MANAGER, true)
+        }
+
         recyclerView = binding.recyclerView
         // Sets the LinearLayoutManager of the recyclerview
         chooseLayout()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(KEY_LAYOUT_MANAGER, isLinearLayoutManager)
     }
 
     private fun chooseLayout() {
